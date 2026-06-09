@@ -28,7 +28,11 @@ def daily_workflow():
         
         if notices_data:
             with get_db_session() as db:
+                seen_urls = set()
                 for nd in notices_data:
+                    if nd['url'] in seen_urls:
+                        continue
+                        
                     # Find fund id (simple heuristic or link it to all AMC funds if generic)
                     # For a real system, you'd parse the title to link to a specific fund.
                     # Here we link to the first Motilal fund just to store the notice, or leave fund_id null if schema allows.
@@ -47,6 +51,7 @@ def daily_workflow():
                                 url=nd['url']
                             )
                             db.add(notice)
+                            seen_urls.add(nd['url'])
                 db.commit()
     except Exception as e:
         logger.error(f"AMC scraping failed: {e}", exc_info=True)
