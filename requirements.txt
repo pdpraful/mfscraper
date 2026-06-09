@@ -1,0 +1,8 @@
+playwright==1.42.0
+SQLAlchemy==2.0.29
+APScheduler==3.10.4
+pandas==2.2.1
+requests==2.31.0
+pydantic==2.6.4
+python-dotenv==1.0.1
+pdfplumber==0.11.0
