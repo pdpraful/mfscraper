@@ -64,6 +64,7 @@ class EmailReporter:
         try:
             with get_db_session() as db:
                 funds = db.query(Fund).filter(Fund.is_international == True).order_by(Fund.capacity_score.desc()).all()
+                etfs = db.query(Fund).filter(Fund.ticker.isnot(None), Fund.premium_discount.isnot(None)).order_by(Fund.premium_discount.asc()).all()
                 
                 high_conviction = [f for f in funds if f.capacity_score >= 70]
                 top_tracked = funds[:5] # Show top 5 regardless of score just for visibility
@@ -135,6 +136,39 @@ class EmailReporter:
                             </table>
                     """
                     
+                # Add ETF section
+                if etfs:
+                    html += """
+                            <h2 style="color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; font-size: 18px; margin-top: 30px;">📈 Top International ETFs by Value</h2>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="text-align: left;">
+                                        <th style="padding: 10px 15px; border-bottom: 1px solid #cbd5e1; color: #64748b; font-weight: 600; font-size: 13px;">ETF Name</th>
+                                        <th style="padding: 10px 15px; border-bottom: 1px solid #cbd5e1; color: #64748b; font-weight: 600; font-size: 13px;">Price</th>
+                                        <th style="padding: 10px 15px; border-bottom: 1px solid #cbd5e1; color: #64748b; font-weight: 600; font-size: 13px;">NAV</th>
+                                        <th style="padding: 10px 15px; border-bottom: 1px solid #cbd5e1; color: #64748b; font-weight: 600; font-size: 13px;">Prem/Disc %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    """
+                    for f in etfs:
+                        pd_color = "#16a34a" if f.premium_discount <= 0 else "#dc2626"
+                        pd_text = f"{f.premium_discount}%"
+                        html += f"""
+                                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                                        <td style="padding: 12px 15px; color: #475569; font-size: 13px;">
+                                            <a href="https://www.google.com/search?q={f.ticker}+stock" target="_blank" style="color: #2563eb; text-decoration: none;">{f.name}</a>
+                                        </td>
+                                        <td style="padding: 12px 15px; color: #0f172a; font-size: 13px; font-weight: 600;">₹{f.latest_price}</td>
+                                        <td style="padding: 12px 15px; color: #64748b; font-size: 13px;">₹{f.latest_nav}</td>
+                                        <td style="padding: 12px 15px; color: {pd_color}; font-size: 13px; font-weight: 600;">{pd_text}</td>
+                                    </tr>
+                        """
+                    html += """
+                                </tbody>
+                            </table>
+                    """
+                    
                 # Add Top 5 section
                 html += """
                             <h2 style="color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; font-size: 18px; margin-top: 30px;">📊 Top 5 Tracked Funds (Overview)</h2>
@@ -181,6 +215,11 @@ class EmailReporter:
                         text_summary += f"  - [{action}] {f.name} ({f.amc}) | Score: {f.capacity_score}\n"
                 else:
                     text_summary += "ℹ️  System Status: No high-conviction opportunities today (all < 70).\n"
+                    
+                if etfs:
+                    text_summary += "\n📈 TOP INTERNATIONAL ETFS BY VALUE:\n"
+                    for f in etfs:
+                        text_summary += f"  - {f.name} ({f.ticker}) | Price: ₹{f.latest_price} | NAV: ₹{f.latest_nav} | Prem/Disc: {f.premium_discount}%\n"
                     
                 text_summary += "\n📊 TOP 5 TRACKED FUNDS:\n"
                 for f in top_tracked:

@@ -28,8 +28,19 @@ class Settings(BaseModel):
     INTL_KEYWORDS: list[str] = [
         "us equity", "global equity", "nasdaq", "s&p 500", "s&p500",
         "developed market", "emerging market", "international", "overseas",
-        "world", "global", "offshore"
+        "world", "global", "offshore", "fang", "hang seng", "nyse", 
+        "japan", "taiwan", "europe"
     ]
+    
+    # Mapping of AMFI exact scheme names to NSE tickers for ETF pricing
+    ETF_TICKER_MAP: dict[str, str] = {
+        "Motilal Oswal Nasdaq 100 ETF (MOFN100)": "MON100.NS",
+        "Motilal Oswal Nasdaq Q50 ETF": "MONQ50.NS",
+        "Mirae Asset S&P 500 Top 50 ETF": "MASPTOP50.NS",
+        "Mirae Asset Hang Seng TECH ETF": "MAHKTECH.NS",
+        "Mirae Asset NYSE FANG+ ETF": "MAFANG.NS",
+        "Nippon India ETF Hang Seng BeES": "HNGSNGBEES.NS"
+    }
     
     # Target AMCs to scrape actively
     TARGET_AMCS: list[str] = [

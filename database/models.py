@@ -33,6 +33,12 @@ class Fund(Base):
     capacity_score = Column(Integer, default=50) # 0-100
     last_verified = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
+    # ETF specific fields
+    ticker = Column(String, nullable=True)
+    latest_nav = Column(Float, nullable=True)
+    latest_price = Column(Float, nullable=True)
+    premium_discount = Column(Float, nullable=True)
+    
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     

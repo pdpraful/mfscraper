@@ -103,7 +103,14 @@ class AmfiScraper:
                         )
                         db.add(fund)
                         added_count += 1
-                
+                    
+                    # Always update the latest NAV and map ETF ticker if applicable
+                    if pd.notna(row['nav']):
+                        fund.latest_nav = float(row['nav'])
+                    
+                    if row['name'] in settings.ETF_TICKER_MAP:
+                        fund.ticker = settings.ETF_TICKER_MAP[row['name']]
+                        
                 logger.info(f"Added {added_count} new international funds to tracking.")
                 
         except Exception as e:
