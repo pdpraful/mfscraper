@@ -9,7 +9,7 @@ The goal of this agent is NOT to report news, but to deterministically identify 
 - **Automated Tracking:** Automatically tracks all Indian mutual funds with overseas exposure (e.g., US equities, Global equities, Nasdaq, S&P 500) using daily data from AMFI.
 - **Capacity Scoring Engine:** Analyzes AUM trends, net flows, and fund age to calculate a deterministic Capacity Score (0-100) indicating the likelihood of available investment capacity.
 - **Background Scheduler:** Runs completely autonomously via `APScheduler`. Scrapes data daily at 06:00 IST and performs a deep universe audit every Sunday.
-- **Email Reporting:** Capable of sending daily HTML reports with ranked high-conviction investment opportunities directly to your inbox.
+- **Rich Reporting & Fallbacks:** Capable of sending daily HTML reports with ranked high-conviction investment opportunities directly to your inbox. If email is disabled, the agent gracefully falls back to printing a clean, formatted text summary to your terminal and saves the interactive HTML dashboard directly to your Desktop.
 - **Extensible AMC Framework:** Includes an advanced, rate-limited Playwright framework to scrape AMC websites. Extracts notices directly from AMC websites and autonomously downloads and parses 50+ page AMC Factsheet PDFs using `pdfplumber` to extract highly accurate, fund-level AUM figures.
 
 ## Architecture Flow
@@ -79,44 +79,25 @@ MFScraper/
 
 ## Setup & Installation
 
-**One-Click Remote Install (Recommended):**
-You can install the agent directly from GitHub without manually cloning the repository. Just paste this command into your terminal:
+**One-Step Interactive Remote Install:**
+You can install and configure the agent completely autonomously directly from GitHub without manually cloning the repository. Just paste this command into your terminal:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/pdpraful/mfscraper/main/remote_install.sh | bash
 ```
 
-This script will securely download the project to `~/.mfscraper-app`, configure the Python virtual environment, install dependencies, and set up your terminal commands automatically.
+This script will securely download the project to `~/.mfscraper-app`, configure the Python virtual environment, install dependencies, set up your terminal commands, and **interactively prompt you to configure your email settings (optional)**.
 
-2. **Reload Your Terminal:**
-   ```bash
-   source ~/.zshrc
-   ```
+**If you skip the email setup prompt during installation**, the agent will automatically fall back to printing the ranked fund summary directly to your terminal and saving the rich HTML dashboard file directly to your Desktop!
 
-3. **Configure Email Reporting (Optional):**
-   The agent can send you daily capacity reports via email. If you skip this, the agent will instead print the report summary to your console and save the HTML report to your Desktop when you run `mfscraper --runonce`.
-
-   To set up email reporting, you must generate a **Google App Password** (you cannot use your normal Gmail password).
-
-   **How to Generate a Google App Password:**
-   1. Go to your Google Account management page: [https://myaccount.google.com/](https://myaccount.google.com/)
-   2. On the left navigation panel, click **Security**.
-   3. Under the "How you sign in to Google" section, ensure **2-Step Verification** is turned ON. *(You cannot create an App Password without this).*
-   4. Click on **2-Step Verification**. Scroll to the very bottom of the page and click on **App passwords**.
-   5. You will be prompted to enter an "App name". Type something like `MF Scraper Agent` and click **Create**.
-   6. A yellow box will appear with a 16-character password (e.g., `abcd efgh ijkl mnop`). **Copy this password but remove the spaces when you paste it during the interactive installation step.**
-
-   **Creating the `.env` File:**
-   In the root folder of this project (`MFScraper/`), create a new file named exactly `.env` and paste your details into it like this:
-
-   ```env
-   SMTP_SERVER=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_USERNAME=your.email@gmail.com
-   SMTP_PASSWORD=your16characterapppasswordnospaces
-   EMAIL_TO=whereyouwanttoreceivereports@gmail.com
-   ```
-   *Note: This file is ignored by git, keeping your credentials secure.*
+**(Optional) How to Generate a Google App Password for Email:**
+If you want to configure email reporting during the installation prompt, you must use a **Google App Password** (you cannot use your normal Gmail password).
+1. Go to your Google Account management page: [https://myaccount.google.com/](https://myaccount.google.com/)
+2. On the left navigation panel, click **Security**.
+3. Under the "How you sign in to Google" section, ensure **2-Step Verification** is turned ON.
+4. Click on **2-Step Verification**. Scroll to the bottom and click on **App passwords**.
+5. You will be prompted to enter an "App name". Type `MF Scraper Agent` and click **Create**.
+6. A yellow box will appear with a 16-character password. Copy this password and provide it when the terminal asks for it during installation.
 
 ## Usage
 
